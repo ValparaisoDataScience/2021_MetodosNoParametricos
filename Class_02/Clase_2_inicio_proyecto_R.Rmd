@@ -32,6 +32,7 @@ output:
 **R**
 R es un lenguaje de programación orientado a *objetos*.
 
+Esta es la versión de R que se usó para crear esta guía.
 ```{r, echo=TRUE}
 R.version.string
 ```
