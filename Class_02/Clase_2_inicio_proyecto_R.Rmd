@@ -42,11 +42,11 @@ R.version.string
   
 #### Comandos y argumentos.
 
-**library()**
+**library()**  
 Este comando permite instalar librerías en R.  
 Ejemplo: *library(stats)*
 
-**<-**
+**<-**  
 Este comando permite crear objetos. Por ejemplo, el siguiente código crea un objeto llamado datos con 4 elementos denominados 1,2,3 y 4.  
 *datos <- c(1,2,3,4)*
 
