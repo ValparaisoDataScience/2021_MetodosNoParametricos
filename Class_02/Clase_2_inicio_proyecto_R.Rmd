@@ -30,6 +30,7 @@ output:
 #### Software.
 
 **R**
+R es un lenguaje de programación orientado a *objetos*.
 
 ```{r, echo=TRUE}
 R.version.string
@@ -40,6 +41,14 @@ R.version.string
 **{stats}**, **{base}**, **{graphics}**
   
 #### Comandos y argumentos.
+
+**library()**
+Este comando permite instalar librerías en R.  
+Ejemplo: *library(stats)*
+
+**<-**
+Este comando permite crear objetos. Por ejemplo, el siguiente código crea un objeto llamado datos con 4 elementos denominados 1,2,3 y 4.  
+*datos <- c(1,2,3,4)*
 
 **set.seed()**    
 Establece una semilla o punto de inicio para la generación de números aleatorios. Permite obtener resultados reproducibles cada vez.
@@ -76,17 +85,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(stats)
 library(base)
-library(base)
+library(graphics)
 
 help(stats)
 help(base)
-help(base)
+help(graphics)
 ```
 
-**Ejercicio 2.** Borre los bloques de códigos R que se generan automáticamente con cada archivo .Rmd y reemplacelos por 5 nuevos bloques de códigos con el botón verde **+C** que se encuentra en la parte superior del panel de códigos. Ejecute cad uno de los siguientes ejercicios en un bloque de códigos.
+**Ejercicio 2.** Borre los bloques de códigos R que se generan automáticamente con cada archivo .Rmd y reemplacelos por 5 nuevos bloques de códigos con el botón verde **+C** que se encuentra en la parte superior del panel de códigos. Ejecute cada uno de los siguientes ejercicios en un bloque de códigos diferente.
 
 
-**Ejercicio 3.** Simule una muestra aletoria de 100 peces de la especie Salmo salar con promedio 5 Kg y con desviación estandar de 0,8 Kg (use punto para representar el decimal: 0.8). Establesca una semilla de 123 usando la función set.seed()
+**Ejercicio 3.** Simule una muestra aletoria de 100 peces de la especie salmón del Atlántico (*Salmo salar*) con promedio 5 Kg y con desviación estandar de 0,8 Kg (use punto para representar el decimal: 0.8). Establesca una semilla de 123 usando la función set.seed()
 
 ```{r, out.width = '80%'}
 set.seed(123)
