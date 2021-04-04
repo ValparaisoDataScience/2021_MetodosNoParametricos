@@ -1,0 +1,189 @@
+---
+title: "Análisis exploratorio de datos"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+  
+#### Objetivos de aprendizaje
+
+Realizar un análisis exploratorio de datos con el **[software R](https://es.r4ds.hadley.nz/an%C3%A1lisis-exploratorio-de-datos-eda.html)**.
+  
+#### Conceptos importantes
+
+**Variable cualitativa:** Variables que expresan cualidades o atributos de los individuos o el ambiente.
+ 
+**Variable cuantitativa:** Variables que adoptan valores numéricos
+
+**Variable nominal:**Variables que no tienen orden o jerarquía dentro de sus elementos.
+
+**Variable ordinal:**Variables cuyos elementos se pueden ordenar en una jerarquía.
+
+**Variable binaria:** Variables con dos estados o niveles.
+
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{psych}** , **{readxl}**
+  
+#### Comandos y argumentos para observar el comportamiento de una variable.
+
+1.- Resumen estadístico  
+***summary()***
+
+2.- Estructura de un objeto  
+**str()**
+
+3.- Tabla de distribución de frecuencia  
+**table()**
+
+4.- Gráfica x-y de puntos"p", lineas "l" o ambas "b".  
+**plot()**
+
+5.- Gráfica de cajas y bigotes.  
+**boxplot()**
+
+6.- Mediante una función de densidad empírica.  
+**density()**
+
+7.- Coeficiente de correlación.  
+**cor()**
+
+#### EJERCICIOS
+
+Los ejercicios de esta guía se realizarán con un extracto del set de datos **GSI_DATASET.xlsx**. Este set de datos pertenece a un estudio de investigación que compara diferentes variables cualitativas y cuantitativas entre salmones diploides y triploides. Contiene 7 columnas denominadas: Fish_ID, Sex, Ploidy, Length_mm, Weight_g, Gonad_weight_g y GSI (Indice gonado somático).
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+**Ejercicio 1.** Elabore un archivo Rmarkdown o file con extensión **.Rmd** en Rstudio o Rstudio.cloud y configurelo para exportar el resultado como un documento dinámico **pdf**. 
+
+En el primier bloque de códigos o **chunk** configure los comandos de la siguiente manera *knitr::opts_chunk$set(echo = TRUE)* y cargue las librerías **psych**, **readxl**, **stats** y **graphics** usando la función library().
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+library(psych)
+library(readxl)
+library(stats)
+library(graphics)
+```
+
+**Ejercicio 2.** Borre los bloques de códigos R que se generan automáticamente con cada archivo .Rmd y reemplacelos por 5 nuevos bloques de códigos con el botón verde **+C** que se encuentra en la parte superior del panel de códigos. Ejecute cada uno de los siguientes ejercicios en un bloque de códigos diferente.
+
+**Ejercicio 3.** Importe el set de datos **GSI_DATASET** usando la función *read_excel()* de la librería *readxl*. Explore el set de datos usando las funciones *summary()* y *str()*.
+
+```{r}
+
+GSI <- read_excel("GSI_DATASET.xlsx")
+summary(GSI)
+str(GSI)
+
+```
+
+**Ejercicio 4.** Note que del ejercicio anterior algunas variables fueron erradamente codificadas como caracter o texto en ves de factor o numero. Antes de continuar con el EDA use la función **as.factor()** para correguir este error en la importación en las variables Fish_ID, Sex, Ploidy y la función **as.numeric()** para correguir este error en la importación en las variables Gonad_weight_g y GSI. Siga el siguiente ejemplo:
+
+```{r}
+# GSI$Fish_ID <- as.factor(GSI$Fish_ID)
+```
+
+```{r}
+GSI$Fish_ID <- as.factor(GSI$Fish_ID)
+GSI$Sex <- as.factor(GSI$Sex)
+GSI$Ploidy <- as.factor(GSI$Ploidy)
+GSI$Gonad_weight_g <- as.numeric(GSI$Fish_ID)
+GSI$GSI <- as.numeric(GSI$Fish_ID)
+
+```
+
+Vuelva a ejecutar los comandos summary() y str() para comprobar que las variables están adecuadamente codificadas.
+
+```{r}
+summary(GSI)
+str(GSI)
+```
+
+
+
+**Ejercicio 5.** A partir del set de datos GSI_DATASET elabore un histograma, una función de densidad y un boxplot de las variables cuantitativas continuas: *Weight_g*,*Length_mm*. Use las funciones hist(), plot(density() y boxplot(). 
+
+**Luego responda las siguientes preguntas**
+¿Tienen estas variables una distribución normal? ¿Por qué si, por qué no?
+¿En cual observa valores atípicos?
+¿Calcule la moda y la mediana de cada variable usando programación R?
+
+```{r}
+hist(GSI$Weight_g)
+plot(density(GSI$Weight_g))
+boxplot(GSI$Weight_g)
+
+hist(GSI$Length_mm)
+plot(density(GSI$Length_mm))
+boxplot(GSI$Length_mm)
+
+```
+
+**Ejercicio 6.** Investigue si existe covariación (correlación) entre las variables: *Weight_g* v/s *Length_mm*. Use las funciones plot() y cor(). 
+
+
+```{r, fig.cap="Correlacion entre Body weight y Body length", fig.height= 4, fig.width=7}
+
+plot(x=GSI$Weight_g , y=GSI$Length_mm , col="red", pch=8,  xlab = "Body weight (g)", ylab = "Body length (mm)")
+
+cor(x=GSI$Weight_g, y=GSI$Length_mm)
+```
+
+**Ejercicio 7.** Investigue si existe covariación (correlación) entre las variables: *Weight_g* v/s *GSI*. Use las funciones plot() y cor(). 
+
+```{r, fig.cap="Correlación entre Body weight e Índice gonadosomatico (GSI)", fig.height= 4, fig.width=7}
+
+plot(x=GSI$Weight_g, y=GSI$GSI, col="blue4", pch=19,  xlab = "Body weight (g)", ylab = "Gonadosomatic Index")
+
+cor(x=GSI$Weight_g, y=GSI$GSI)
+
+```
+**Ejercicio 8.** Investigue si existe covariación (correlación) todas las variables cuantitativas. Use la función pairs.panels(), seleccione solo las columnas 4:7 con el siguiente argumento *[,4:7]*.
+
+```{r}
+# Gráfica de correlación de variables continuas
+pairs.panels(GSI[,4:7], method = "pearson", hist.col = "red",  density = TRUE)
+```
+
+**Ejercicio 9.** Investigue si existe covariación de la variable *Weight_g* en función de la *Ploidy*. Use la función boxplot().
+
+```{r, fig.cap="Variación del peso del cuerpo en función de la ploidía"}
+
+boxplot(GSI$Weight_g ~ GSI$Ploidy, col=c(2,3), xlab = "Ploidy", ylab = "Body weight (g)")
+
+
+```
+
+**Ejercicio 9.** Investigue si existe interación entre las variables ploidia (*Ploidy*) y sexo (*Sex*) sobre la variable peso del cuerpo (*Weight_g*) Use la función interaction.plot.
+
+```{r Interaction plot, fig.cap="Efecto de la interacción entre Ploidia y sexo sobre el IGS.", fig.height= 4, fig.width=7}
+
+interaction.plot(GSI$Ploidy, GSI$Sex, GSI$GSI, ylab = "Indice gonadosomarito (GSI)", col = c(1,2), pch = c(8, 16), type = "b", trace.label = "SEXO", xlab = "") 
+
+```
+
+**Ejercicio 9.** Investigue cual de las dos variables ploidia (*Ploidy*) y sexo (*Sex*) tiene una mayor influencia sobre la variable peso del cuerpo (*Weight_g*) Use la función plot.design.
+
+```{r Plot desing, fig.cap="Tamaño de los efectos de Ploidia y sexo sobre el IGS.", fig.height= 4, fig.width=7}
+
+plot.design(GSI$Weight_g ~ GSI$Ploidy * GSI$Sex, mean, ylab = "Indice gonadosomarito (GSI)", col = c(4), xlab="", xaxt="n")
+axis(1, 1:2, c("Ploidia", "Sexo"))
+
+```
