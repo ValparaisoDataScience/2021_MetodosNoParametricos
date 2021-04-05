@@ -96,16 +96,13 @@ str(GSI)
 
 **Ejercicio 4.** Note que del ejercicio anterior algunas variables fueron erradamente codificadas como caracter o texto en ves de factor o numero. Antes de continuar con el EDA use la función **as.factor()** para correguir este error en la importación en las variables Fish_ID, Sex, Ploidy y la función **as.numeric()** para correguir este error en la importación en las variables Gonad_weight_g y GSI. Siga el siguiente ejemplo:
 
-```{r}
-# GSI$Fish_ID <- as.factor(GSI$Fish_ID)
-```
 
 ```{r}
 GSI$Fish_ID <- as.factor(GSI$Fish_ID)
 GSI$Sex <- as.factor(GSI$Sex)
 GSI$Ploidy <- as.factor(GSI$Ploidy)
-GSI$Gonad_weight_g <- as.numeric(GSI$Fish_ID)
-GSI$GSI <- as.numeric(GSI$Fish_ID)
+GSI$Gonad_weight_g <- as.numeric(GSI$Gonad_weight_g)
+GSI$GSI <- as.numeric(GSI$GSI)
 
 ```
 
