@@ -1,0 +1,74 @@
+---
+title: "Prueba 1"
+author:
+  name: Dr. José A. Gallardo.
+  affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+  email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+subtitle: Métodos de análisis no paramétricos
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("dplyr")
+library(MASS)
+library(readxl)
+```
+
+**INSTRUCCIONES GENERALES**
+
+1) Elabore un script R Markdown usando el programa Rstudio en su versión cloud y guárdelo en su directorio como: Prueba_1.Rmd
+
+2) Resuelva los ejercicios propuestos en esta prueba en grupos de 2 o 3 alumnos.
+
+3) Compile el código con el botón Knit y guardelo en formato pdf.
+
+4) Envíe su prueba al siguiente correo antes del viernes 09 de abril a las 18:00 P <jose.gallardo@pucv.cl>
+
+**DESARROLLO DE LA PRUEBA**
+
+**EJERCICIO 1. CREACIÓN DE UN OBJETO Y SIMULACIÓN DE UN CONJUNTO DE DATOS CON DISTRIBUCIÓN NORMAL. 2 PUNTOS**  
+
+**a)** Cree un objeto con formato data.frame de nombre “Clorofila_valpo” y simule en el un conjunto de datos de Clorofila de la Bahía de Valparaíso. Use las funciones "<-", rnorm () y set.seed(123). Considere los siguientes argumentos para simular el conjunto de datos.   
+
+Número de muestras = 100  
+Promedio de clorofila = 80 mg/m2  
+Desviación estándar = 10 mg/m2  
+
+Renombre la variable creada como "Clorofila" usando la función names(). Use la función class(), head() y summary() para explorar la tabla del set de datos creado.  
+
+
+**EJERCICIO 2. GRAFICAR HISTOGRAMAS, BOXPLOT Y FUNCIONES DE DENSIDAD EMPÍRICA CON LA LIBRERÍA {graphics} y {stats}. 3 PUNTOS**  
+
+**a)** Realice un histograma y un boxplot del “Clorofila_valpo” usando las funciones hist() y boxplot(). Investigue la función par() y una ambos graficos en un solo panel que tenga una fila y dos columnas. Agregue títulos de gráfico, nombre de los ejes y un color a su elección.  
+
+**b)**  Investigue y use las funciones density() y ecdf() para realizar una grafica plot() de la función de densidad y la función de densidad acumulada de los datos de clorofila.  
+
+
+**EJERCICIO 3. INTERPRETATION VARIABLE CON DISTRIBUCIÓN NORMAL. 3 PUNTOS**  
+
+**a)** Determine el valor medio, mediana, máximo y mínimo del set de datos "Clorifila_valpo".  
+
+**b)** Investigue la función boxplot.stats() y determine que valores son atípicos. ¿Es coincidente el resultado con los valores atípicos de la grafica boxplot del ejercicio 2a?
+
+
+**c)** Cree un objeto de nombre **fx** y almacene en el, la distribución acumulada empírica de la clorofila ecdf(Clorofila_valpo$Clorofila). Con la función class() determine que tipo de objeto es **fx**. Determine la probabilidad de encontrar un valor de clorofila menor de 60 mg/m2 y mayor de 80 mg/m2.  
+
+
+**EJERCICIO 4. ANÁLISIS EXPLORATORIO DE UN SET DE DATOS NO NORMAL. 4 PUNTOS**
+
+El archivo "parasitos.xlsx" contiene el registro de parasitos de 100 peces colectados del intermareal rocoso. El archivo dos factores de clasificación de peces, la especie y el sexo de los peces colectados.  
+
+**a)** Importe el set de datos **parasitos.xslx** usando la función *read_excel()* de la librería *readxl* y transforme a factor las columnas Especie y Sex con la función as.factor. Explore el set de datos usando la función *summary()*.  
+
+**b)** A partir del set de datos parasitos elabore un histograma y una gráfica de cajas y bigotes para la variable discreta parasitos (ej. datos$parasitos). Use la función par(mfrow=c(1,2)) para generar las gráficas en una sola fila y con 2 columnas y el argumento "horizontal = TRUE" para que el boxplot sea horizontal y no vertical.  
+
+**c)** Usando la función plot() y scdf() gráfique la distribución acumulada empírica de la variable parasitos.  
+
+
+**d)** Realice una grafica de interacción y una grafica de tamaño de los efectos de la variable *parasitos* usando las funcines interaction.plot() y plot.design(). Incluya *especie* y *sexo* como factores.
+
