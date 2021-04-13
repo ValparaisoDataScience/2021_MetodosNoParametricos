@@ -17,5 +17,4 @@ Contenidos: Prueba t de permutación para muestras pareadas y para muestras inde
 ANÁLISIS MULTIVARIADO
 Objetivo específico: Conocer y distinguir los principales métodos multivariables de tipo ordenación y clasificación. 
 Contenidos: Análisis de agrupamiento y reducción de dimensionalidad (Análisis de componentes principales, PCA).
-![image](https://user-images.githubusercontent.com/70146916/114572719-bd726780-9c45-11eb-9690-62802bf9e05e.png)
 
