@@ -1,0 +1,149 @@
+---
+title: "Ejemplo Análisis de Componentes Principales"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+#### Objetivos de aprendizaje
+
+Elaborar un análisis de componentes principales con un set de datos simulado usando el **software R**.
+  
+#### Conceptos importantes
+
+**Análisis de componentes principales**  
+Es una herramienta utilizada para realizar análisis exploratorio de datos multivariantes y para construir modelos predictivos.
+
+Permite reducir la dimensionalidad y encontrar patrones en un set de datos mediante el calculo de los “componentes principales”.
+
+Los componentes principales se ordenan por la cantidad de varianza original que describen [Wiki.](https://es.wikipedia.org/wiki/An%C3%A1lisis_de_componentes_principales).
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{psych}**  
+Procedures for Psychological, Psychometric, and Personality
+Research
+
+**{factoextra}**  
+Extract and Visualize the Results of Multivariate Data Analyses.
+
+#### Comandos para realizar los análisis.
+
+**read_excel()**  
+Importa datos a R desde archivos excel.
+
+**select**
+Selecciona variables desde un data.frame o una tibble.
+
+
+
+
+#### EJERCICIOS
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+Elabore un archivo Rmarkdown o file con extensión **.Rmd** en Rstudio o Rstudio.cloud y configurelo para exportar el resultado como un documento dinámico **pdf**. 
+
+En el primer bloque de códigos o **chunk** configure los comandos de la siguiente manera *knitr::opts_chunk$set(echo = TRUE)* y habilite las librerías **stats**,  **readxl**, **dplyr**, **vegan**, **psych** usando la función library().
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+library(readxl)
+library(dplyr)
+library(psych)
+library(factoextra)
+library(ggplot2)
+```
+
+A partir del set de datos **bioenv.xlsx** disponibles en el libro  MULTIVARIATE ANALYSIS OF ECOLOGICAL DATA de los autores [Michael Greenacre and Raul Primicerio](https://www.fbbva.es/microsite/multivariate-statistics/) se realiza un ACP.
+
+**Ejercicio 1.** Importar y explorar
+
+a) Importe la hoja 1 set de datos **bioenv.xlsx** usando la función *read_excel()* de la librería *readxl*. No olvide usar el argumento *Sheet=1*. Explore el set de datos usando las funciones *summary()*. Compruebe que todas las variables numéricas están expresadas como número y que las variables Sitio y Sediment sean factores. Caso contrario realice los cambios correspondientes con las funciones **as.numeric()** y **as.factor()**.
+
+```{r}
+bioenv <- read_excel("bioenv.xlsx", sheet = 1)
+summary(bioenv)
+bioenv$Sitio <- as.factor(bioenv$Sitio)
+bioenv$Sediment <- as.factor(bioenv$Sediment)
+str(bioenv)
+```
+
+b) Elabore una gráfica de correlaciones de las variables Depth, Pollution y Temperature usando la función **pairs.panels()**.
+
+```{r}
+pairs.panels(bioenv[7:9])
+```
+
+c) Realice pruebas de normalidad con el método gráfico y con el test de Shapiro. 
+```{r}
+qqnorm(bioenv$Depth)
+qqline(bioenv$Depth)
+qqnorm(bioenv$Pollution)
+qqline(bioenv$Pollution)
+qqnorm(bioenv$Temperature)
+qqline(bioenv$Temperature)
+
+shapiro.test(bioenv$Depth)
+shapiro.test(bioenv$Pollution)
+shapiro.test(bioenv$Temperature)
+```
+
+**Ejercicio 2.** Análisis de Componentes Principales
+
+a) Elabore un nuevo set de datos llamado **bioenv_new** solo con las variables Depth, Pollution y Temperature, utilice la columna Sitio para agregar el nombre de las filas.
+
+```{r}
+bioenv_new <- as.data.frame(bioenv[,7:9])
+row.names(bioenv_new) <- bioenv$Sitio
+head(bioenv_new)
+```
+
+b) Realice un análisis de componentes principales para el nuevo set de datos **bioenv_new** con la función **prcomp**, use el argumento *scale = TRUE* para estandarizar las variables de forma automática. 
+
+```{r}
+
+bioenvpca <- prcomp(bioenv_new, scale = TRUE)
+bioenvpca
+```
+
+c) Obtenga la varianza explicada por cada CP con la función **get_eigenvalue** y grafique con la función **fviz_eig**.
+
+```{r}
+get_eigenvalue(bioenvpca)
+fviz_eig(bioenvpca)
+
+```
+
+d) Elabore gráficas para representar la distribución de los sitios **fviz_pca_ind()**, de las variables **fviz_pca_var()** y gráficas Biplot de individuos y variables **fviz_pca_biplot()**
+
+```{r}
+fviz_pca_ind(bioenvpca, repel = TRUE) # evita que se solape el nombre de los sitios
+
+```
+
+
+```{r}
+fviz_pca_var(bioenvpca)
+```
+
+
+```{r}
+fviz_pca_biplot(bioenvpca, repel = TRUE)
+```

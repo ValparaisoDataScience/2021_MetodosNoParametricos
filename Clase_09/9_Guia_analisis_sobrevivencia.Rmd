@@ -1,0 +1,163 @@
+---
+title: "Guia análisis de sobrevivencia"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+#### Objetivos de aprendizaje
+
+Realizar e interpretar pruebas de análisis no paramétrico con **software R**.
+  
+#### Conceptos importantes
+
+Los análisis de sobrevivencia son un conjunto de herramientas estadísticas *No paramétricas* utilizadas para analizar la probabilidad de que un evento (muerte) ocurra en un determinado tiempo.
+
+**Método de Kaplan-Meier**  
+Método no paramétrico que estima las probabilidades de supervivencia S(t) en los instantes en los que ha ocurrido el evento.
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{survival}**  
+Contains the core survival analysis routines, including definition of Surv objects, Kaplan-Meier and Aalen-Johansen (multi-state) curves, Cox models, and parametric accelerated failure time models.
+
+**{readxl}**  
+Read Excel Files.
+  
+#### Comandos para realizar los análisis.
+
+**Surv()**
+Create a Survival Object, usually used as a response variable in a model formula. 
+
+**survdiff()**
+Test Survival Curve Differences
+Description
+Tests if there is a difference between two or more survival curves using the G-rho family of tests, or for a single curve against a known alternative.
+
+**survfit()**
+Create survival curves
+Description
+This function creates survival curves from either a formula (e.g. the Kaplan-Meier), a previously fitted Cox model, or a previously fitted accelerated failure time model.
+
+#### EJERCICIOS
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+Elabore un archivo Rmarkdown o file con extensión **.Rmd** en Rstudio o Rstudio.cloud y configurelo para exportar el resultado como un documento dinámico **pdf**. 
+
+En el primer bloque de códigos o **chunk** configure los comandos de la siguiente manera *knitr::opts_chunk$set(echo = TRUE)* y habilite la librería **survival** y **readxl** usando la función library().
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(survival)
+library(pander)
+```
+
+**Ejercicio 1.** En el siguiente experimento se desea evaluar y comparar la probabilidad de sobrevivir del ostión del norte (*Argopecten purpuratus*) frente a un depredador natural como es la estrella de mar (*Heliaster helianthus*). 
+
+En el estudio dos grupos de 15 ostiones se han fijado al sustrato en el fondo de la bahía de la Herradura mediante un filamento adherido a la valva, lo que le permite tener cierto grado de movilidad. Para excluir a los depredadores uno de los grupos se ha cubierto con una jaula, mientras que el otro no.
+
+a) Escriba una hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : La sobrevivencia entre ostiones protegidos o no protegidos de depredadores es igual.
+# H1 : La sobrevivencia entre ostiones protegidos o no protegidos de depredadores es diferente.
+
+```
+
+b) Importe la hoja 1 set de datos **scallop_dat.xlsx** usando la función **read_excel()** de la librería *readxl*. No olvide usar el argumento *Sheet=1*. Explore el set de datos usando la función **summary()**. Luego transforme las variable depredador de caracter a factor con la función **as.factor()** y compruebe que se ha realizado el cambio con la función **str()**.
+
+```{r}
+scallop <- read_excel("scallop_dat.xlsx", sheet = 1)
+summary(scallop)
+scallop$depredador <- as.factor(scallop$depredador)
+str(scallop)
+```
+
+c) Calcule e imprima la probabilidad de sobrevivencia kaplan-meier del set de datos scallop. Siga el ejemplo visto en clases para construir el modelo y comparar entre grupos con y sin depredadores usando las funciones **survfit()** y **Surv()**.
+
+```{r}
+p_scallop <- survfit(Surv(survival_time,survival_status)~strata(depredador),
+             data = scallop, na.action=na.exclude, type="kaplan-meier")
+
+summary(p_scallop)
+
+```
+
+d) Realice una prueba no paramétrica de Long rank test para comparar estadísticamente las curvas de supervivencia usando la función **survdiff()**.
+
+```{r}
+surv_diff <- survdiff(Surv(survival_time,survival_status)~depredador, data = scallop)
+surv_diff
+```
+
+d) Interprete sus resultados.
+
+
+**Ejercicio 2.** El oxígeno es un indicador importante de los procesos biológicos en el océano y por tanto es una variable que se requiere monitorear de forma precisa en diversos contexto de la oceanografía incluyendo el monitoreo de sistemas de cultivo de peces, la caracterización de fiordos y canales o el cambio climático en el Océano. 
+
+En una empresa de servicios ambientales para la acuicultura se desea calcular y comparar el tiempo medio de falla de un sensor de oxígeno utilizado para medir oxígeno superficial (1 metro) y de fondo (30 metros) de una jaula de cultivo. Para ello se utilizó el siguiente registro de tiempos de falla (en días) de 10 sensores utilizados en ambos ambientes por 730 días, tiempo en el que se retiraron los sensores para mantención (tiempo de censura). 
+
+```{r, echo=FALSE}
+sensor_1m <- c(683, 682, 730, 677, 730, 730, 730, 688, 681, 678)
+sensor_30m <- c(612, 590, 629, 665, 611, 628, 730, 589, 603, 661)
+
+dat <- data.frame(sensor_1m, sensor_30m)
+  
+knitr::kable(dat, col.names=c("1 metro","30 metros"), caption = "Tabla 1. Tiempo de falla y de censura de 10 sensores de oxígeno utilizados a 1 y 30 metros de profundidad")
+```
+
+a) Escriba una hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : El tiempo de falla es igual entre sensores utilizados a 1 y 30 metros.
+# H1 : El tiempo de falla es diferente entre sensores utilizados a 1 y 30 metros.
+
+```
+
+b) Elabore e importe una tabla excel con los datos de falla en un formato que permita realizar un estudio de tiempo de falla de los sensores.
+
+```{r}
+sensor <- read_excel("sensor.xlsx", sheet = 1)
+sensor$profundidad <- as.factor(sensor$profundidad)
+head(sensor)
+tail(sensor)
+```
+
+
+c) Calcule y compare la probabilidad de falla kaplan-meier del set de datos sensor usando las funciones **survfit** y **Surv**.
+
+```{r}
+p_sensor <- survfit(Surv(stime,status)~strata(profundidad),
+             data = sensor, na.action=na.exclude, type="kaplan-meier")
+
+summary(p_sensor)
+
+```
+
+d) Realice una prueba no paramétrica de Long rank test para comparar estadísticamente los tiempos de falla usando la función **survdiff()**.
+
+```{r}
+surv_diff <- survdiff(Surv(stime,status)~profundidad, data = sensor)
+surv_diff
+```
+
+d) Interprete sus resultados.

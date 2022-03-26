@@ -1,0 +1,136 @@
+---
+title: "Prueba 4"
+author:
+  name: Dr. José A. Gallardo.
+  affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+  email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+subtitle: "Métodos de análisis no paramétricos"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(vegan)
+library(dplyr)
+library(psych)
+library(cluster)
+library(factoextra)
+```
+
+**INSTRUCCIONES GENERALES**
+
+1) Elabore un script R Markdown usando el programa Rstudio en su versión cloud y guárdelo en su directorio como: Prueba_4.Rmd
+
+2) Resuelva los ejercicios propuestos en esta prueba en grupos de 2 o 3 alumnos.
+
+3) Instale las siguientes librerías **readxl**, **ggplot2**, **vegan**,*
+**dplyr**, **psych**, **cluster**, **factoextra**.
+
+4) Compile el código con el botón Knit y guardelo en formato pdf.
+
+5) Envíe su prueba al siguiente correo antes del sábado 03 de julio a las 18:00 PM <jose.gallardo@pucv.cl>
+
+**DESARROLLO DE LA PRUEBA**
+
+**Ejercicio 1.** Matrices de distancia y correlación (4 puntos).
+
+[Beltrán y  colaboradores 2010](https://scielo.conicyt.cl/pdf/revbiolmar/v45n2/art05.pdf) investigaron la distribución de la macrofauna bentónica en el lago costero Budi, el cual se ubica en la región de la Araucanía, Sur de Chile.
+
+Como parte del estudio analizaron la abundancia de la macrofauna, medida como individuos por metro cuadrado, en 9 estaciones de muestreo.
+
+a) Importe la hoja 1 del set de datos (**lago_budi_dat.xlsx**)  usando la función *read_excel()* de la librería *readxl* y realice un exploratorio de los datos.
+
+```{r echo = FALSE}
+# budi_dat <- read_excel("lago_budi_dat.xlsx", sheet = 1)
+# summary(budi_dat)
+```
+
+b) Elabore una matriz de correlaciones no paramétrica de spearman **cor()** para las 9 estaciones de muestreo usando la información de abundancia de especies.
+
+Sugerencia: use solo las columnas 2-10. Si desea nombre las estaciones de muestreo o columnas como (e1 a e9) y las especies o filas como (a,b,c,d,e,f,g,h,i).
+
+```{r echo = FALSE}
+# new_budi_dat <- budi_dat[2:10]
+# colnames(new_budi_dat) <- c("e1",	"e2",	"e3",	"e4",	"e5",	"e6",	"e7",	"e8",	"e9")
+# rownames(new_budi_dat) <- c("a","b","c","d","e","f","g","h","i")
+# res <- cor(new_budi_dat, method = "spearman")
+# round(res[c(1:9),c(1:9)], 2)
+```
+
+c) Calcule el índice de disimilaridad de Bray-Curtis usando la función **vegdist()** de la librería **vegan**. Exprese el índice como porcentaje y compare con la correlación estimada anteriormente y con la tabla de abundancia importada.
+
+Sugerencia: imprima disimilaridad de las 9 estaciones y redondee a 1 decimal.
+
+```{r echo = FALSE}
+# Bray_curtis <- vegdist(budi_dat[2:10], method="bray", binary=FALSE, diag=FALSE, upper=FALSE, na.rm = FALSE)*100
+# Bray_curtis <- as.matrix(Bray_curtis)
+# class(Bray_curtis)
+# round(Bray_curtis[c(1:9),c(1:9)], 1)
+```
+
+**Ejercicio 2.** Análisis de cluster jerárquico (4 puntos).
+
+En la hoja 2 del set de datos  (**lago_budi_dat.xlsx**) para cada estación Beltrán y colaboradores (2010) han determinado los siguientes índices ecológicos: 
+
+- Abundancia (A).
+- Dominancia (D).
+- Diversidad (H).
+
+A partir de esos datos realice los siguientes análisis
+
+a) Importe la hoja 2 set de datos (**lago_budi_dat.xlsx**) usando la función *read_excel()* de la librería *readxl*. Explore el set de datos usando las funciones *summary()*. Compruebe que todas las variables numéricas están expresadas como número y que la variable **Estaciones** es un factor. Caso contrario realice los cambios correspondientes con las funciones **as.numeric()** y **as.factor()**.
+
+```{r echo = FALSE}
+# budi_dat2 <- read_excel("lago_budi_dat.xlsx",  sheet = 2)
+# summary(budi_dat2)
+# budi_dat2$Estaciones <- as.factor(budi_dat2$Estaciones)
+# str(budi_dat2)
+```
+
+b) Elabore una gráfica de correlaciones de las variables Abundancia, Dominancia y Diversidad usando la función **pairs.panels()** de la librería **psych**.
+
+```{r echo = FALSE}
+# pairs.panels(budi_dat2[2:4])
+```
+
+c) Para las tres variables cuantitativas (A, D y H) elabore 3 variables derivadas A1, D1 y H1 con su *valor estandarizado* como la diferencia de cada valor por la media **mean()** y dividiendo por la desviasión estandar **sd()**. Use la función **mutate()** de la librería **dplyr**
+
+```{r echo = FALSE}
+# # Crea nuevas variables
+# colnames(budi_dat2) <- c("E",	"A",	"D",	"H")
+# 
+# val_estandarizado <- budi_dat2 %>%
+#  select(A, D, H) %>%
+#  mutate(
+#   A1 = (A - mean(A)) / sd(A),
+#   D1 = (D - mean(D)) / sd(D),
+#   H1 = (H - mean(H)) / sd(H))
+```
+
+d) Elabore una gráfica de correlaciones de las variables estandarizadas usando la función **pairs.panels()** y compare con las correlaciones estimadas en el ejercicio **1b** que calcula la correlación con la variable original.
+
+```{r echo = FALSE}
+# pairs.panels(val_estandarizado[4:6])
+```
+
+e) Calcule la matriz de distancia euclideana estandarizada para las estaciones e1 a e9 usando los tres Índices ecológicos (A1,D1,H1). Use la función **dist()**.
+
+```{r echo = FALSE}
+# distance matrix
+# d <- dist(val_estandarizado[4:6], method = "euclidean") 
+```
+
+f) Elabore una gráfica de cluster jerarquico usando la función **hclust()**. Considere el método UPGMA usando el argumento *method="average"*. Grafique el dendograma con la función **plot()**.
+
+```{r echo = FALSE}
+# fit <- hclust(d, method="average")
+# plot(fit)
+```
+
+g) Con base a los resultados del dendograma y considerando un valor de similtud de 1.5, ¿Cuántos grupos se pueden observar? Respecto de la estación 8, ¿Puede considerarse un grupo independiente?

@@ -1,0 +1,125 @@
+---
+title: "Prueba 2"
+author:
+  name: Dr. José A. Gallardo.
+  affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+  email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+subtitle: Métodos de análisis no paramétricos
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+```
+
+**INSTRUCCIONES GENERALES**
+
+1) Elabore un script R Markdown usando el programa Rstudio en su versión cloud y guárdelo en su directorio como: Prueba_2.Rmd
+
+2) Resuelva los ejercicios propuestos en esta prueba en grupos de 2 o 3 alumnos.
+
+3) Compile el código con el botón Knit y guardelo en formato pdf.
+
+4) Envíe su prueba al siguiente correo antes del viernes 30 de abril a las 18:00 P <jose.gallardo@pucv.cl>
+
+**DESARROLLO DE LA PRUEBA**
+
+**Ejercicio 1.** Se ha reportado que la abundancia de especies de la macrofauna béntica en el mar báltico está correlacionada con la profundidad del agua, pero no del oxígeno disuelto [Gogina et al. 2010](https://www.io-warnemuende.de/tl_files/bio/ag-benthische-organismen/pdf/Gogina%20et%20al.-2009-Causal%20analysis.pdf). **5 puntos.**
+
+A partir del set de datos contenidos en el archivo **abundancia.xlsx** demuestre si las siguientes hipótesis son verdaderas:
+
+**Primera hipótesis:** *Hydrobia ulvaey* y profundidad de agua.
+
+H0 : La abundancia de *Hydrobia ulvaey* y la profundidad del agua son mutuamente independientes.
+H1 : La abundancia de *Hydrobia ulvaey* y la profundidad del agua no son mutuamente independientes.
+
+**Segunda hipótesis:** *Hydrobia ulvaey* y oxígeno disuelto. 
+
+H0 : La abundancia de *Hydrobia ulvaey* y el oxóigeno disuelto son mutuamente independientes.
+H1 : La abundancia de *Hydrobia ulvaey* y el oxígeno disuelto no son mutuamente independientes. 
+
+Incluya en su respuesta
+
+a) Una clasificación de las variables profundidad, oxígeno y abundancia como cuantitativas discretas o cuantitativas contínuas. **1 punto.**
+
+b) Un resumen de las variables abundancia, profundidad y oxígeno con la función summary(). **1 punto.**
+
+```{r, echo=FALSE}
+datos <- read_excel("abundancia.xlsx")
+# summary(datos)
+```
+
+c) Dos gráficas de puntos para representar la asociación entre abundancia y profundidad, y entre abundancia y oxígeno disuelto con la función plot(). **1 punto.**
+
+```{r, echo=FALSE}
+# plot(datos$profundidad, datos$abundancia)
+# plot(datos$oxigeno, datos$abundancia)
+```
+
+
+d) Dos test de correlación con la función cor.test(). **1 punto.**
+
+```{r, , echo=FALSE}
+# cor.test(datos$profundidad,datos$abundancia, method = "spearman", alternative = "two.sided")
+# cor.test(datos$oxigeno,datos$abundancia, method = "spearman", alternative = "two.sided")
+```
+
+e) La interpretación de sus resultados haciendo mención al valor de correlación rho, a la hipótesis nula H0 y a la probabilidad de que la hipótesis sea verdadera o no. **1 punto.**
+
+**Ejercicio 2.** Se desea investigar el efecto de la instalación de una reserva marina protegida sobre el tamaño (Tabla 1) y el contenido estomacal (Tabla 2) del bacalao Atlántico (*Gadus morhua*). **4 puntos.**
+
+```{r, , echo=FALSE}
+M <- as.table(rbind(c(7, 23), c(26, 4)))
+dimnames(M) <- list(respuesta = c("Dentro de la reserva", "Fuera de la reserva"), tratamiento = c("Menor 5 Kg","Mayor o igual a 5 Kg"))
+
+knitr::kable(M, caption = "Tabla 1. Relación entre el tamaño de peces colectados dentro y fuera de una reserva marina.")
+```
+
+
+```{r echo=FALSE}
+N <- as.table(rbind(c(22, 8), c(2, 28)))
+dimnames(N) <- list(respuesta = c("Dentro de la reserva", "Fuera de la reserva"), tratamiento = c("Con alimento","Sin alimento"))
+
+knitr::kable(N, caption = "Tabla 2. Relación entre contenido de alimento en el estómado de peces colectados dentro y fuera de una reserva marina.")
+
+```
+
+a) Proponga las hipótesis nula y alternativa para este experimento. **1 punto.**
+
+```{r, echo=FALSE}
+# H0 : La reserva marina y el tamaño de los peces son independientes. 
+# H1 : La reserva marina y el tamaño de los peces no son independientes.
+
+# H0 : La reserva marina y el contenido estomacal de los peces son independientes. 
+# H1 : La reserva marina y el contenido estomacal de los peces no son independientes.
+```
+
+b) Cree una matriz de 2x2 con los datos de cada uno de los experimentos. Incluya los nombres de filas y columnas. **1 punto.**
+
+```{r, echo=FALSE}
+
+M <- as.table(rbind(c(7, 23), c(26, 4)))
+dimnames(M) <- list(respuesta = c("Dentro de la reserva", "Fuera de la reserva"), tratamiento = c("Menor 5 Kg","Mayor o igual a 5 Kg"))
+
+N <- as.table(rbind(c(22, 8), c(2, 28)))
+dimnames(N) <- list(respuesta = c("Dentro de la reserva", "Fuera de la reserva"), tratamiento = c("Con alimento","Sin alimento"))
+
+```
+
+c) Ponga a prueba sus hipótesis usando el test de chi cuadrado (**chisq.test()**) o el test exacto de fisher usando la función **fisher.test()** según corresponda. No olvide seleccionar en el argumento *alternative=""* que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*. **1 punto.**
+
+```{r, echo=FALSE}
+
+# Test de Chi-squared en R (chisq.test)
+# test_1 <- chisq.test(M)
+# 
+# test_1 <- fisher.test(N, alternative = "two.sided")
+
+```
+
+d) Interprete sus resultados. **1 punto.**

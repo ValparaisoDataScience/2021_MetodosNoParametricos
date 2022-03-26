@@ -1,0 +1,204 @@
+---
+title: "Guia contraste de hipótesis"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+#### Objetivos de aprendizaje
+
+Realizar e interpretar pruebas de contraste no paramétrico con **software R**.
+  
+#### Conceptos importantes
+
+Las pruebas de contraste de hipótesis son procedimientos estadísticos que tienen como propósito evaluar o someter a prueba una hipótesis que formula el investigador.
+
+Para ejecutar una prueba de hipótesis el investigador debe formular una hipótesis nula y otra alternativa.
+
+La hipótesis nula (H0) es una afirmación, usualmente de igualdad, contraria a la hipótesis alternativa (H1). 
+
+La hipótesis alternativa es una afirmación que se deduce de una observación previa o de los antecedentes de literatura y que el investigador cree que es verdadera.
+
+**Prueba de Wilkoxon**  
+La prueba de Wilcoxon es una prueba no paramétrica que permite comparar dos muestras y determinar si existen diferencias entre ellas. Se utiliza cuando no se puede suponer la normalidad de dichas muestras. Las muestras puedes ser independientes, pareadas o repetidas.
+
+**Prueba de Kurskal Wallis**  
+Pa prueba de Kruskal-Wallis es un método no paramétrico que permite evaluar si multiples muesttras independientes provienen de una población común. Comúnmente se utiliza esta prueba como alternativa a un ANOVA cuando los datos no tienen una distribución normal
+
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{stats}**  
+This package contains functions for statistical calculations and random number generation.
+
+**{readxl}**  
+Read Excel Files.
+  
+#### Comandos para realizar los análisis.
+
+**read_excel()**  
+**data.frame()**  
+**colnames()**  
+**boxplot()**  
+**wilcox.test()**  
+**kruskal.test()**  
+
+#### EJERCICIOS
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+Elabore un archivo Rmarkdown o file con extensión **.Rmd** en Rstudio o Rstudio.cloud y configurelo para exportar el resultado como un documento dinámico **pdf**. 
+
+En el primer bloque de códigos o **chunk** configure los comandos de la siguiente manera *knitr::opts_chunk$set(echo = TRUE)* y habilite la librería **stats** y **readxl** usando la función library().
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+library(pander)
+library(readxl)
+library(ggplot2)
+```
+
+**Ejercicio 1.** En el siguiente experimento se desea evaluar si la abundancia de larvas es mayor en peces que desovan en el ambiente pelágico (PP) que en aquellos de desovan en un ambiente béntico (PB). Se sugiere aplicar el test de wilcoxon en atención a que ambos grupos provienen de la mismas muestras. Revise el estudio de [Landaeta y colaboradores, 2015](https://revbiolmar.uv.cl/resumenes/v504/504-563.pdf) para más antecedentes de la distribución de larvas de peces en la bahía de Valparaíso.
+
+```{r, echo=FALSE}
+PP <- c(140, 110, 120, 155, 100)
+PB <- c(90, 120, 130, 150, 100)
+
+
+dat <- data.frame(PP, PB)
+  
+knitr::kable(dat, col.names=c("Peces pelágicos", "Peces benticos"), caption = "Tabla 1. Abundancia de larvas de peces benticos y pelagicos por 1000 metros cúbicos")
+
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : La abundancia de larvas de peces pelágicos es igual a la abundancia de peces bénticos.
+# H1 : La abundancia de larvas de peces pelágicos es mayor a la abundancia de peces bénticos.
+
+```
+
+b) Cree un data.frame con la abundancia de larvas de peces pelágicos y benticos.
+
+```{r}
+# Crea objetos PB y PP 
+PP <- c(140, 110, 120, 155, 100)
+PB <- c(90, 120, 130, 150, 100)
+
+
+larvas <- data.frame(PP, PB)
+  
+colnames(larvas) <- c("Peces pelágicos", "Peces benticos")
+larvas
+class(larvas)
+```
+
+c) Elabore un boxplot para comparar la abundancia de larvas entre peces pelágicos y bentónicos, use la función **boxplot()**
+
+```{r}
+boxplot(larvas$`Peces pelágicos`, larvas$`Peces benticos` , col=c(2,3), ylab= "Abundancia larvas x 1000 m3", xlab= "Peces")
+legend("bottomleft",
+       legend = c("Pelagicos", "Bentónicos"),
+       fill = 2:3,       # Color de los rectángulos
+       border = "black") # Color del borde de los rectángulos
+```
+
+d) Ponga a prueba su hipótesis usando el test de wilcoxon usando la función **wilcox.test()**, no olvide seleccionar en el argumento *alternative=""* para indicar que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*. También incluya el argumento *paired = FALSE*.
+
+```{r}
+# Prueba de Wilcoxon en R (wilcox.test)
+wilcox.test(PP, PB, alternative = "g", paired = FALSE)
+```
+
+e) Interprete sus resultados.
+
+**Ejercicio 2.** En el siguiente experimento se desea evaluar si las temperaturas máxima del mes de abril de Valparaíso son significantivamente más altas que las de Con Con para el mismo mes. Se sugiere aplicar el test de wilcoxon para muestras pareadas en atención a que ambos grupos provienen de la mismos días.
+
+```{r, fig.cap="Temperatura máxima de Valparaiso y Con Cóndurante el mes de abril de 2021"}
+tem <- read_excel("temperatura.xlsx", sheet = 2)
+ggplot(tem, aes(x=Dia, y=Temperatura, group=Clasificación)) +
+  geom_line(aes(linetype=Clasificación))+
+  geom_point(aes(shape=Clasificación))
+
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : La temperatura máxima de Valparaiso no es mayor a la temperatura máxima de Con Con del mes de abril de 2021.
+# H1 : La temperatura máxima de Valparaiso es mayor a la temperatura máxima de Con Con del mes de abril de 2021
+
+```
+
+b) Importe la hoja 1 set de datos **temperatura** usando la función *read_excel()* de la librería *readxl*. No olvide usar el argumento *Sheet=1*. Explore el set de datos usando las funciones *summary()* y *str()*.
+
+```{r}
+temperatura <- read_excel("temperatura.xlsx", sheet = 1)
+summary(temperatura)
+str(temperatura)
+```
+
+c) Ponga a prueba su hipótesis usando el test de wilcoxon usando la función **wilcox.test()**, no olvide seleccionar en el argumento *alternative=""* para indicar que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*. También incluya el argumento *paired = TRUE*.
+
+```{r}
+# no es necesario indicar muestras pareadas pues estamos haciendo la resta en la función.
+wilcox.test(temperatura$Valparaiso - temperatura$ConCon, alternative = "greater")
+```
+
+c) Interprete sus resultados.
+
+
+**Ejercicio 3.** En el siguiente experimento se desea evaluar si la concentración de fitoplancton (célular x mililitro x 100.000) es diferente entre los años 2016, 2018, 2020. Revise el estudio de [Fuica y colaboradores, 2016](file:///Users/macbook/Downloads/01.Fans.pdf) para más antecedentes de la distribución de fitoplanton en el sur de Chile.
+
+
+```{r, echo=FALSE}
+g1 <- c(0.4, 0.2, 0.1, 0.3) # Grupo 2016
+g2 <- c(0.5, 0.6, 0.8, 0.4) # Grupo 2018
+g3 <- c(0.9, 1.0, 1.2, 1.1) # Grupo 2020
+
+fito <- data.frame(g1, g2, g3)
+  
+colnames(fito) <- c("2016", "2018","2020")
+
+knitr::kable(fito, col.names=c("2016", "2018","2020"), caption = "Tabla 2. Fitoplancton en el Sur de Chile en los años 2016, 2018 y 2020")
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : La concentración de fitoplancton no es diferente entre los años 2016, 2018, 2020.
+# H1 :  La concentración de fitoplancton no es diferente entre los años 2016, 2018, 2020.
+
+```
+
+b) Elabore tres vectores con la concentración de fitoplanton y luego realice un test de kruskal wallis para evaluar su hipótesis.
+
+```{r}
+g1 <- c(0.4, 0.2, 0.1, 0.3) # Grupo 2016
+g2 <- c(0.5, 0.6, 0.8, 0.4) # Grupo 2018
+g3 <- c(0.9, 1.0, 1.2, 1.1) # Grupo 2020
+kruskal.test(list(g1, g2, g3))
+
+```
+
+c) Interprete sus resultados.
